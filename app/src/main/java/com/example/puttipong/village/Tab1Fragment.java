@@ -1,6 +1,7 @@
 package com.example.puttipong.village;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,23 +16,21 @@ import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.squareup.picasso.Picasso;
 
-public class Tab1Fragment extends Fragment {
+public class Tab1Fragment extends Fragment implements View.OnClickListener {
 
-    private TextView tvName, tvFullName;
+    private TextView tvName, tvFullName, tvUserId;
     private ImageView imgProfile;
-    private Profile profile = null;
     private Button btnLogout;
     private static final String TAG = "Tab1Fragment";
+    private String name, link, facebookId, imgUri;
 
     public Tab1Fragment() {
         super();
     }
 
-    public static Tab1Fragment newInstance(Profile profile) {
+    public static Tab1Fragment newInstance(Bundle bundle) {
         Tab1Fragment fragment = new Tab1Fragment();
-        Bundle args = new Bundle();
-        args.putParcelable("USER_INFO", profile);
-        fragment.setArguments(args);
+        fragment.setArguments(bundle);
         return fragment;
     }
 
@@ -44,20 +43,14 @@ public class Tab1Fragment extends Fragment {
     }
 
     private void initInstances(View rootView) {
+        Log.i(TAG, "initInstances: ");
+
         tvName = (TextView) rootView.findViewById(R.id.tvName);
         tvFullName = (TextView) rootView.findViewById(R.id.tvFullName);
+        tvUserId = (TextView) rootView.findViewById(R.id.tvUserId);
         imgProfile = (ImageView) rootView.findViewById(R.id.imgProfile);
         btnLogout = (Button) rootView.findViewById(R.id.btnLogout);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logout();
-            }
-        });
 
-        tvName.setText("NEw Puttipong");
-
-        // Init 'View' instance(s) with rootView.findViewById here
     }
 
     @Override
@@ -85,22 +78,21 @@ public class Tab1Fragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "onActivityCreated: "+ savedInstanceState);
-
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            profile = (Profile) bundle.getParcelable("USER_INFO");
-        } else {
-            profile = Profile.getCurrentProfile();
+            name = bundle.getString("NAME");
+            link = bundle.getString("LINK");
+            facebookId = bundle.getString("FACEBOOK_ID");
+            imgUri = bundle.getString("IMG_URI");
+
+            tvName.setText(name);
+            tvFullName.setText(name);
+            tvUserId.setText(facebookId);
+            Picasso.with(getActivity())
+                    .load(imgUri)
+                    .into(imgProfile);
         }
-
-//        Picasso.with(getActivity())
-//                .load(profile.getProfilePictureUri(400, 400).toString())
-//                .into(imgProfile);
-        Log.i(TAG, "onActivityCreated: " + profile.getName());
-        Log.i(TAG, "onActivityCreated: " + profile.getFirstName() + " " + profile.getLastName());
-
 
         if (savedInstanceState != null) {
             // Restore Instance State here
@@ -112,5 +104,20 @@ public class Tab1Fragment extends Fragment {
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         getActivity().finish();
         startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == imgProfile){
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.setData(Uri.parse(link));
+            startActivity(intent);
+        }
+
+        if (v == btnLogout){
+            logout();
+        }
     }
 }
