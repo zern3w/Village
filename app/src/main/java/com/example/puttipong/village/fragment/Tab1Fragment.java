@@ -1,10 +1,9 @@
-package com.example.puttipong.village;
+package com.example.puttipong.village.fragment;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.puttipong.village.activity.LoginActivity;
+import com.example.puttipong.village.R;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.squareup.picasso.Picasso;
@@ -43,13 +44,15 @@ public class Tab1Fragment extends Fragment implements View.OnClickListener {
     }
 
     private void initInstances(View rootView) {
-        Log.i(TAG, "initInstances: ");
 
         tvName = (TextView) rootView.findViewById(R.id.tvName);
         tvFullName = (TextView) rootView.findViewById(R.id.tvFullName);
         tvUserId = (TextView) rootView.findViewById(R.id.tvUserId);
         imgProfile = (ImageView) rootView.findViewById(R.id.imgProfile);
         btnLogout = (Button) rootView.findViewById(R.id.btnLogout);
+
+        imgProfile.setOnClickListener(this);
+        btnLogout.setOnClickListener(this);
 
     }
 
@@ -108,7 +111,7 @@ public class Tab1Fragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (v == imgProfile){
+        if (v == imgProfile) {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
             intent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -116,8 +119,13 @@ public class Tab1Fragment extends Fragment implements View.OnClickListener {
             startActivity(intent);
         }
 
-        if (v == btnLogout){
+        if (v == btnLogout) {
             logout();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 }
